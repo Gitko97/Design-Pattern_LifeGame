@@ -4,6 +4,11 @@
 # Log file
 *.log
 
+#eclips
+.project
+.metadata
+.classpath
+
 #Intellij
 .idea
 *.swp

@@ -19,14 +19,41 @@ import com.holub.life.Universe;
 
 public final class Resident implements Cell
 {
+	final CellState deadState;
+	final CellState liveState;
+	private CellState currentState;
+	private CellState futureState;
+	
+	private Rule deadRule, liveRule;
+	private int numNeighbors = 0;
+	
+	public int getNumNeighbors()	{ return this.numNeighbors; }
+	public void setCurrentState(CellState state) {
+		this.currentState = state;
+	}
+	public void setFutureState(CellState state) {
+		this.futureState = state;
+	}
+	public CellState getCurrentState() {
+		return this.currentState;
+	}
+	public CellState getFutureState() {
+		return this.futureState;
+	}
+	
+	public Resident(Rule liveRule, Rule deadRule) {
+		this.liveState = new LiveState(this, liveRule);
+		this.deadState = new DeadState(this, deadRule);
+		this.currentState = this.futureState = this.deadState;
+		this.deadRule = deadRule;
+		this.liveRule = liveRule;
+	}
+	
 	private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
 	private static final Color LIVE_COLOR 	= Color.RED;
 	private static final Color DEAD_COLOR   = Colors.LIGHT_YELLOW;
 
-	private boolean amAlive 	= false;
-	private boolean willBeAlive	= false;
-
-	private boolean isStable(){return amAlive == willBeAlive; }
+	private boolean isStable(){return this.currentState == this.futureState; }
 
 	/** figure the next state.
 	 *  @return true if the cell is not stable (will change state on the
@@ -58,7 +85,9 @@ public final class Resident implements Cell
 		if( southeast.isAlive()) ++neighbors;
 		if( southwest.isAlive()) ++neighbors;
 
-		willBeAlive = (neighbors==3 || (amAlive && neighbors==2));
+		this.numNeighbors = neighbors;
+		this.currentState.changeFutureState();
+		
 		return !isStable();
 	}
 
@@ -79,13 +108,13 @@ public final class Resident implements Cell
 
 	public boolean transition()
 	{	boolean changed = isStable();
-		amAlive = willBeAlive;
+		this.currentState.transitionCurrentState();
 		return changed;
 	}
 
 	public void redraw(Graphics g, Rectangle here, boolean drawAll)
     {   g = g.create();
-		g.setColor(amAlive ? LIVE_COLOR : DEAD_COLOR );
+		g.setColor(isAlive() ? LIVE_COLOR : DEAD_COLOR );
 		g.fillRect(here.x+1, here.y+1, here.width-1, here.height-1);
 
 		// Doesn't draw a line on the far right and bottom of the
@@ -99,12 +128,12 @@ public final class Resident implements Cell
 	}
 
 	public void userClicked(Point here, Rectangle surface)
-	{	amAlive = !amAlive;
+	{	this.currentState.changeCurrentState();
 	}
 
-	public void	   clear()			{amAlive = willBeAlive = false; }
-	public boolean isAlive()		{return amAlive;			    }
-	public Cell    create()			{return new Resident();			}
+	public void	   clear()			{this.currentState = this.futureState = this.deadState; }
+	public boolean isAlive()		{return (this.currentState == this.liveState);			    }
+	public Cell    create()			{return new Resident(this.liveRule, this.deadRule);			}
 	public int 	   widthInCells()	{return 1;}
 
 	public Direction isDisruptiveTo()
@@ -115,10 +144,12 @@ public final class Resident implements Cell
 	{
 		Memento memento = (Memento)blob;
 		if( doLoad )
-		{	if( amAlive = willBeAlive = memento.isAlive(upperLeft) )
+		{	if(memento.isAlive(upperLeft) ) {
+				this.currentState = this.futureState = this.liveState;
 				return true;
+			}
 		}
-		else if( amAlive )  					// store only live cells
+		else if( isAlive() )  					// store only live cells
 			memento.markAsAlive( upperLeft );
 
 		return false;
