@@ -6,4 +6,6 @@ public interface GameCell {
 
 	public Cell makeCell();
 	
+	public Cell getCurrentOuterMostCell();
+	
 }
