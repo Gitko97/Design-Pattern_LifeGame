@@ -7,11 +7,15 @@ import com.holub.life.Clock;
 import com.holub.io.Files;
 import com.holub.life.Storable;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,13 +26,90 @@ import javax.swing.SwingUtilities;
 
 public class OriginalUI extends UI {
 
-	//OriginalCell한테 받아와야함...?
-	//private final Cell outermostCell
 	
-	//앞으로가기 뒤로가기
-	public void createButtons() {
+	private static final int  DEFAULT_CELL_SIZE = 8;
+	
+	
+	public void makeUI() {
+		final Dimension PREFERRED_SIZE =
+				new Dimension
+				(  outermostCell.widthInCells() * DEFAULT_CELL_SIZE,
+				   outermostCell.widthInCells() * DEFAULT_CELL_SIZE
+				);
 		
 		
+		//JFrame으로 변경되면서 추가
+		setLocationRelativeTo(null);
+		setVisible(true);
+		
+		setBackground	( Color.white	 );
+		setPreferredSize( PREFERRED_SIZE );
+		setMaximumSize	( PREFERRED_SIZE );
+		setMinimumSize	( PREFERRED_SIZE );
+		//setOpaque		( true			 );
+
+		addMouseListener					//{=Universe.mouse}
+		(	new MouseAdapter()
+			{	public void mousePressed(MouseEvent e)
+				{	Rectangle bounds = getBounds();
+					bounds.x = 0;
+					bounds.y = 0;
+					outermostCell.userClicked(e.getPoint(),bounds);
+					repaint();
+				}
+			}
+		);
+		
+		MenuSite.addLine( this, "Grid", "Clear",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+				{	outermostCell.clear();
+					repaint();
+				}
+			}
+		);
+		
+		MenuSite.addLine			// {=Universe.load.setup}
+		(	this, "Grid", "Load",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+				{	doLoad();
+				}
+			}
+		);
+
+		MenuSite.addLine
+		(	this, "Grid", "Store",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+				{	doStore();
+				}
+			}
+		);
+
+		MenuSite.addLine
+		(	this, "Grid", "Exit",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+		        {	System.exit(0);
+		        }
+			}
+		);
+		
+		Clock.instance().addClockListener //{=Universe.clock.subscribe}
+		(	new Clock.Listener()
+			{	public void tick()
+				{	if( outermostCell.figureNextState
+						   ( Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,
+							 Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY
+						   )
+					  )
+					{	if( outermostCell.transition() )
+							refreshNow();
+					}
+				}
+			}
+		);
 	}
 
 	//Clock에 있던거
@@ -45,9 +126,9 @@ public class OriginalUI extends UI {
 					char toDo = name.charAt(0);
 
 					if( toDo=='T' )
-						tick();				      // single tick
+						Clock.instance().tick();				      // single tick
 					else
-						startTicking(   toDo=='A' ? 500:	  // agonizing
+						Clock.instance().startTicking(   toDo=='A' ? 500:	  // agonizing
 										toDo=='S' ? 150:	  // slow
 										toDo=='M' ? 70 :	  // medium
 										toDo=='F' ? 30 : 0 ); // fast
@@ -99,7 +180,7 @@ public class OriginalUI extends UI {
 	}
 	
 	
-	public void load() {
+	public void doLoad() {
 		try
 		{
 			FileInputStream in = new FileInputStream(
@@ -121,8 +202,7 @@ public class OriginalUI extends UI {
 		repaint();		
 	}
 	
-	
-	public void store() {
+	public void doStore() {
 		try
 		{
 			FileOutputStream out = new FileOutputStream(

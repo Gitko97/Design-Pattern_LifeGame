@@ -1,6 +1,9 @@
 package com.holub.life.factory;
 
-public class GameCell {
-	public makeCell() {};
-	public GameCell instance() {};
+import com.holub.life.Cell;
+
+public interface GameCell {
+
+	public Cell makeCell();
+	
 }
