@@ -2,12 +2,19 @@ package com.holub.life.factory;
 
 public class OriginalGameFactory implements GOLFactory {
 	
+	public GameCell gc;
+	public UI ui;
+
 	public UI createUI() {
-		return new OriginalUI();
+		this.ui = new OriginalUI();
+		ui.UI(gc);
+		return ui;
 	}
 	
+
 	public GameCell createCell() {
-		return new OriginalCell();
+		this.gc = new OriginalCell();
+		return gc;
 	}
 
 }
