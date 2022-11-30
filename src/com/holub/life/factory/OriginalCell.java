@@ -25,4 +25,10 @@ public class OriginalCell implements GameCell {
 		
 		return outermostCell;
 	}
+	
+	
+	
+	public Cell getCurrentOuterMostCell() {
+		return outermostCell;
+	}
 }
