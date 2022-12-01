@@ -1,4 +1,4 @@
-package com.holub.life.jiho;
+package com.holub.life.Container;
 import com.holub.life.Cell;
 import com.holub.life.Storable;
 import java.util.ArrayList;

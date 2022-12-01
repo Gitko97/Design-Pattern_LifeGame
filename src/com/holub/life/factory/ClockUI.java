@@ -3,7 +3,7 @@ package com.holub.life.factory;
 
 import com.holub.life.Cell;
 import com.holub.life.Storable;
-import com.holub.life.jiho.CellContainer;
+import com.holub.life.Container.CellContainer;
 import com.holub.ui.MenuSite;
 import com.holub.life.Clock;
 
