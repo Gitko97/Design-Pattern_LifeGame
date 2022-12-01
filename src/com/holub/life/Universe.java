@@ -1,7 +1,8 @@
 package com.holub.life;
 
 import java.io.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -53,11 +54,14 @@ public class Universe extends JPanel
 		// miserably if the overall size of the grid is too big to fit
 		// on the screen.
 
+		Rule stayLiveRule 	= new DefaultRule(new ArrayList<Integer>(Arrays.asList(2,3)));
+		Rule reLiveRule		= new DefaultRule(new ArrayList<Integer>(Arrays.asList(3)));
+
 		outermostCell = new Neighborhood
 						(	DEFAULT_GRID_SIZE,
 							new Neighborhood
 							(	DEFAULT_GRID_SIZE,
-								new Resident()
+								new Resident(stayLiveRule, reLiveRule)
 							)
 						);
 
