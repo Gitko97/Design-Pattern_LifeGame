@@ -3,10 +3,7 @@ package com.holub.life;
 import java.awt.*;
 import javax.swing.*;
 
-import com.holub.life.factory.GOLFactory;
-import com.holub.life.factory.GameCell;
-import com.holub.life.factory.OriginalGameFactory;
-import com.holub.life.factory.UI;
+import com.holub.life.factory.*;
 import com.holub.ui.MenuSite;
 
 /*******************************************************************
@@ -35,11 +32,9 @@ public final class Life extends JFrame
 		setDefaultCloseOperation	( EXIT_ON_CLOSE 		);
 		getContentPane().setLayout	( new BorderLayout()	);
 
-		GOLFactory factory = new OriginalGameFactory();
+		GOLFactory factory = new ClockGameFactory();
 		GameCell gc = factory.createCell();
-		UI ui = factory.createUI(gc);
-
-		getContentPane().add( ui, BorderLayout.CENTER); //{=life.java.install}
+		UI ui = factory.createUI(this ,gc);
 
 		pack();
 		setVisible( true );

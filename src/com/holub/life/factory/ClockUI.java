@@ -2,6 +2,8 @@ package com.holub.life.factory;
 
 
 import com.holub.life.Cell;
+import com.holub.life.Storable;
+import com.holub.life.jiho.CellContainer;
 import com.holub.ui.MenuSite;
 import com.holub.life.Clock;
 
@@ -15,21 +17,41 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 
-public class OriginalUI extends UI {
-
+public class ClockUI extends UI {
+    private final CellContainer cellContainer = CellContainer.getInstance();
+    public JPanel subPanel;
     private static final int DEFAULT_CELL_SIZE = 8;
 
-    public OriginalUI(JFrame mainFrame, GameCell gc) {
+    public ClockUI(JFrame mainFrame, GameCell gc) {
         super(gc);
-        mainFrame.getContentPane().add( this, BorderLayout.CENTER); //{=life.java.install}
+        mainFrame.getContentPane().add(this, BorderLayout.CENTER);
+        mainFrame.getContentPane().add(subPanel, BorderLayout.SOUTH);
     }
 
 
     public void makeUI() {
 
+        subPanel = new ButtonSubPanel(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Clock.instance().startTicking(0);
+                Storable previousCell = cellContainer.getPrevious();
+                ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
+                if (previousCell == null) {
+                    return;
+                }
+                gamecell.getCurrentOuterMostCell().transfer(previousCell, new Point(0, 0), Cell.LOAD);
+                refreshNow();
+            }
+        }, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Clock.instance().startTicking(0);
+                Clock.instance().tick();
+            }
+        });
+
         final Dimension PREFERRED_SIZE =
             new Dimension
-                (super.gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE,
+                (gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE,
                     gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE
                 );
 
@@ -91,6 +113,8 @@ public class OriginalUI extends UI {
         Clock.instance().addClockListener //{=Universe.clock.subscribe}
             (new Clock.Listener() {
                  public void tick() {
+                     cellContainer.storeCurrent(gamecell.getCurrentOuterMostCell());
+                     ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
                      if (gamecell.getCurrentOuterMostCell().figureNextState
                          (Cell.DUMMY, Cell.DUMMY, Cell.DUMMY, Cell.DUMMY,
                              Cell.DUMMY, Cell.DUMMY, Cell.DUMMY, Cell.DUMMY
@@ -125,5 +149,36 @@ public class OriginalUI extends UI {
         MenuSite.addLine(this, "Go", "Slow", modifier);
         MenuSite.addLine(this, "Go", "Medium", modifier);
         MenuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
+    }
+
+
+    public class ButtonSubPanel extends JPanel {
+
+
+        private JButton leftButton;
+        private JButton rightButton;
+        private JTextField textField;
+
+        public ButtonSubPanel(ActionListener left, ActionListener right) {
+            setLayout(new FlowLayout());
+            leftButton = new JButton("previous");
+            leftButton.addActionListener(left);
+            rightButton = new JButton("next");
+            rightButton.addActionListener(right);
+            textField = new JTextField();
+            leftButton.setPreferredSize(new Dimension(100, 50));
+            rightButton.setPreferredSize(new Dimension(100, 50));
+            textField.setPreferredSize(new Dimension(100, 50));
+            textField.setEditable(false);
+            textField.setHorizontalAlignment(JTextField.CENTER);
+            textField.setText("0");
+            add(leftButton);
+            add(textField);
+            add(rightButton);
+        }
+
+        public void setTextField(int text) {
+            textField.setText(String.valueOf(text));
+        }
     }
 }

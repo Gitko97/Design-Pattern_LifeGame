@@ -23,14 +23,16 @@ public abstract class UI extends JPanel {
 
 	public UI(GameCell gc){
 		this.gamecell = gc;
+		makeUI();
 	}
 
-	public void makeUI() {}
-	
-	//Clock에 있던거
-	public void createMenus() {}
+	public UI(JFrame mainFrame, GameCell gc){
+		this.gamecell = gc;
+		makeUI();
+	}
 
-	
+	public abstract void makeUI();
+
 	public void paint(Graphics g)
 	{
 		Rectangle panelBounds = getBounds();
