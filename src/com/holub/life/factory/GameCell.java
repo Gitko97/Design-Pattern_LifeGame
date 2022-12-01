@@ -1,25 +1,18 @@
 package com.holub.life.factory;
 
-import com.holub.life.Cell;
-import com.holub.life.Neighborhood;
-import com.holub.life.Resident;
+import com.holub.life.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class GameCell {
 
-	public Cell  	outermostCell;
-	private static final int  DEFAULT_GRID_SIZE = 8;
+    public Cell outermostCell;
+    protected static final int DEFAULT_GRID_SIZE = 8;
+    Rule stayLiveRule;
+    Rule reLiveRule;
 
-	public GameCell(){
-		outermostCell = new Neighborhood
-			(	DEFAULT_GRID_SIZE,
-				new Neighborhood
-					(	DEFAULT_GRID_SIZE,
-						new Resident()
-					)
-			);
-	}
-
-	public Cell getCurrentOuterMostCell() {
-		return outermostCell;
-	}
+    public Cell getCurrentOuterMostCell() {
+        return outermostCell;
+    }
 }

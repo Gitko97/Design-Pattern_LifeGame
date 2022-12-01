@@ -31,23 +31,7 @@ public class ClockUI extends UI {
 
     public void makeUI() {
 
-        subPanel = new ButtonSubPanel(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Clock.instance().startTicking(0);
-                Storable previousCell = cellContainer.getPrevious();
-                ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
-                if (previousCell == null) {
-                    return;
-                }
-                gamecell.getCurrentOuterMostCell().transfer(previousCell, new Point(0, 0), Cell.LOAD);
-                refreshNow();
-            }
-        }, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Clock.instance().startTicking(0);
-                Clock.instance().tick();
-            }
-        });
+        subPanel = new ButtonSubPanel();
 
         final Dimension PREFERRED_SIZE =
             new Dimension
@@ -159,12 +143,30 @@ public class ClockUI extends UI {
         private JButton rightButton;
         private JTextField textField;
 
-        public ButtonSubPanel(ActionListener left, ActionListener right) {
+        public ButtonSubPanel() {
             setLayout(new FlowLayout());
             leftButton = new JButton("previous");
-            leftButton.addActionListener(left);
+            leftButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Clock.instance().startTicking(0);
+                    Storable previousCell = cellContainer.getPrevious();
+                    ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
+                    if (previousCell == null) {
+                        return;
+                    }
+
+                    // @ToDo: fix error
+                    gamecell.getCurrentOuterMostCell().transfer(previousCell, new Point(0, 0), Cell.LOAD);
+                    refreshNow();
+                }
+            });
             rightButton = new JButton("next");
-            rightButton.addActionListener(right);
+            rightButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    Clock.instance().startTicking(0);
+                    Clock.instance().tick();
+                }
+            });
             textField = new JTextField();
             leftButton.setPreferredSize(new Dimension(100, 50));
             rightButton.setPreferredSize(new Dimension(100, 50));
