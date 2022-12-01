@@ -21,16 +21,18 @@ public class OriginalUI extends UI {
 
 	
 	private static final int  DEFAULT_CELL_SIZE = 8;
-	
-	public void UI(GameCell gc) {
-		this.gamecell = gc;
+
+	public OriginalUI(GameCell gc) {
+		super(gc);
+		makeUI();
 	}
-	
-	
+
+
 	public void makeUI() {
+
 		final Dimension PREFERRED_SIZE =
 				new Dimension
-				(  gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE,
+				(  super.gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE,
 						gamecell.getCurrentOuterMostCell().widthInCells() * DEFAULT_CELL_SIZE
 				);
 		
@@ -103,8 +105,7 @@ public class OriginalUI extends UI {
 				}
 			}
 		);
-		
-		
+
 		createMenus();
 	}
 	

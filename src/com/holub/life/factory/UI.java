@@ -20,11 +20,11 @@ import com.holub.life.Storable;
 public abstract class UI extends JPanel {
 	
 	public GameCell gamecell;
-	
-	public void UI(GameCell gc) {
+
+	public UI(GameCell gc){
 		this.gamecell = gc;
 	}
-	
+
 	public void makeUI() {}
 	
 	//Clock에 있던거
