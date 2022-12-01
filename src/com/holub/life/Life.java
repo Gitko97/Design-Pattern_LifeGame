@@ -2,6 +2,11 @@ package com.holub.life;
 
 import java.awt.*;
 import javax.swing.*;
+
+import com.holub.life.factory.GOLFactory;
+import com.holub.life.factory.GameCell;
+import com.holub.life.factory.OriginalGameFactory;
+import com.holub.life.factory.UI;
 import com.holub.ui.MenuSite;
 
 /*******************************************************************
@@ -24,11 +29,17 @@ public final class Life extends JFrame
 
 		// Must establish the MenuSite very early in case
 		// a subcomponent puts menus on it.
+
 		MenuSite.establish( this );		//{=life.java.establish}
 
 		setDefaultCloseOperation	( EXIT_ON_CLOSE 		);
 		getContentPane().setLayout	( new BorderLayout()	);
-		getContentPane().add( Universe.instance(), BorderLayout.CENTER); //{=life.java.install}
+
+		GOLFactory factory = new OriginalGameFactory();
+		GameCell gc = factory.createCell();
+		UI ui = factory.createUI(gc);
+
+		getContentPane().add( ui, BorderLayout.CENTER); //{=life.java.install}
 
 		pack();
 		setVisible( true );
