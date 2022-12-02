@@ -148,6 +148,7 @@ public final class Resident implements Cell
 				this.currentState = this.futureState = this.liveState;
 				return true;
 			}
+			this.currentState = this.futureState = this.deadState;
 		}
 		else if( isAlive() )  					// store only live cells
 			memento.markAsAlive( upperLeft );
