@@ -7,18 +7,18 @@ import com.holub.life.factory.GameCell;
 import com.holub.life.factory.UI;
 import com.holub.ui.MenuSite;
 import java.awt.BorderLayout;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JFrame;
 import org.junit.jupiter.api.Test;
 
 class TestCell extends GameCell {
-
     Rule stayLiveRule;
     Rule reLiveRule;
-    public TestCell(int stayLive1, int stayLive2, int reLive) {
-        stayLiveRule = new DefaultRule(new ArrayList<Integer>(Arrays.asList(stayLive1, stayLive2)));
-        reLiveRule = new DefaultRule(new ArrayList<Integer>(Arrays.asList(reLive)));
+    public TestCell(ArrayList<Integer> stayLiveArray, ArrayList<Integer> reLiveArray) {
+        stayLiveRule = new DefaultRule(stayLiveArray);
+        reLiveRule = new DefaultRule(reLiveArray);
         outermostCell = new Neighborhood
             (DEFAULT_GRID_SIZE,
                 new Neighborhood
@@ -28,13 +28,19 @@ class TestCell extends GameCell {
             );
     }
 }
-
 class TestFactory implements GOLFactory {
+
+    private ArrayList<Integer> stayLiveArray;
+    private ArrayList<Integer> reLiveArray;
+    TestFactory(ArrayList<Integer> stayLiveArray, ArrayList<Integer> reLiveArray){
+        this.stayLiveArray = stayLiveArray;
+        this.reLiveArray = reLiveArray;
+    }
     public UI createUI(JFrame mainFrame, GameCell gc) {
         return new ClockUI(mainFrame, gc);
     }
     public GameCell createCell() {
-        return new TestCell(2,3,3);
+        return new TestCell(stayLiveArray,reLiveArray);
     }
 }
 
@@ -62,7 +68,21 @@ class TestRuleFrame extends JFrame {
 public class RuleTest {
     @Test
     void testRule(){
-        JFrame testFrame = new TestRuleFrame(new TestFactory());
+        JFrame testFrame = new TestRuleFrame(new TestFactory(
+                                    new ArrayList<Integer>(Arrays.asList(2,3)),
+                                    new ArrayList<Integer>(Arrays.asList(3))));
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testRule1(){
+        JFrame testFrame = new TestRuleFrame(new TestFactory(
+            new ArrayList<Integer>(Arrays.asList(2,4,5,6,7,8)),
+            new ArrayList<Integer>(Arrays.asList(3))));
         try {
             Thread.sleep(100000);
         } catch (InterruptedException e) {

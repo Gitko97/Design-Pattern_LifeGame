@@ -35,7 +35,6 @@ class TestFrame extends JFrame{
 }
 
 class FactoryPatternTest {
-
     @Test
     void makeOriginalUI(){
         JFrame testFrame = new TestFrame(new OriginalGameFactory());
