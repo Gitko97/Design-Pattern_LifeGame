@@ -1,6 +1,7 @@
 package com.holub.life.factory;
 
 
+import com.holub.io.Files;
 import com.holub.life.Cell;
 import com.holub.life.Storable;
 import com.holub.life.Container.CellContainer;
@@ -14,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import javax.swing.*;
 
 
@@ -61,6 +64,8 @@ public class ClockUI extends UI {
         MenuSite.addLine(this, "Grid", "Clear",
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    cellContainer.clear();
+                    ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
                     gamecell.getCurrentOuterMostCell().clear();
                     repaint();
                 }
@@ -71,7 +76,9 @@ public class ClockUI extends UI {
             (this, "Grid", "Load",
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+
                         doLoad();
+
                     }
                 }
             );
@@ -134,6 +141,32 @@ public class ClockUI extends UI {
         MenuSite.addLine(this, "Go", "Medium", modifier);
         MenuSite.addLine(this, "Go", "Fast", modifier); // {=endSetup}
     }
+    public void doLoad() {
+        try
+        {
+
+            FileInputStream in = new FileInputStream(
+                Files.userSelected(".",".life","Life File","Load"));
+
+            Clock.instance().stop();		// stop the game and
+            gamecell.getCurrentOuterMostCell().clear();			// clear the board.
+
+            Storable memento = gamecell.getCurrentOuterMostCell().createMemento();
+            memento.load( in );
+            cellContainer.clear();
+            ((ButtonSubPanel) subPanel).setTextField(cellContainer.getCurrentCount());
+            gamecell.getCurrentOuterMostCell().clear();
+            gamecell.getCurrentOuterMostCell().transfer( memento, new Point(0,0), Cell.LOAD );
+
+            in.close();
+
+        }
+        catch( IOException theException )
+        {	JOptionPane.showMessageDialog( null, "Read Failed!",
+            "The Game of Life", JOptionPane.ERROR_MESSAGE);
+        }
+        repaint();
+    }
 
 
     public class ButtonSubPanel extends JPanel {
@@ -182,5 +215,6 @@ public class ClockUI extends UI {
         public void setTextField(int text) {
             textField.setText(String.valueOf(text));
         }
+
     }
 }
